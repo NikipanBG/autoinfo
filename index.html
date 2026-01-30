@@ -4,20 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1a237e">
-    <meta name="background-color" content="#1a237e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="AutoFleet">
-    <meta name="description" content="Управление на автомобили - винетки, данъци, застраховки, масло, гориво">
-    
     <title>AutoFleet Manager</title>
     
-    <!-- Favicon and Icons -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
-    
-    <!-- Manifest for PWA -->
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQXV0b0ZsZWV0IE1hbmFnZXIiLCJzaG9ydF9uYW1lIjoiQXV0b0ZsZWV0Iiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxYTIzN2UiLCJ0aGVtZV9jb2xvciI6IiMxYTIzN2UiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJyUzRSUzQ3RleHQgeT0nLjllbScgZm9udC1zaXplPSc5MCclM0Xwn5qXJTNCL3RleHQlM0UlM0Mvc3ZnJTNFIn1dfQ==">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQXV0b0ZsZWV0IE1hbmFnZXIiLCJzaG9ydF9uYW1lIjoiQXV0b0ZsZWV0Iiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxYTIzN2UiLCJ0aGVtZV9jb2xvciI6IiMxYTIzN2UiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxMDAgMTAwJzMlM0UlM0N0ZXh0IHk9Jy45ZW0nIGZvbnQtc2l6ZT0nOTAnJTNFRvCfjozigIclM0MvdGV4dCUzRSUzQy9zdmclM0UiLCJzaXplcyI6IjE5MngxOTIifV19">
     
     <style>
         :root {
@@ -31,13 +23,11 @@
             --info: #2196f3;
             --text-primary: #212121;
             --text-secondary: #757575;
-            --radius-md: 16px;
-            --radius-lg: 24px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--background); color: var(--text-primary); padding-bottom: 100px; -webkit-overflow-scrolling: touch; }
+        body { background: var(--background); color: var(--text-primary); padding-bottom: 100px; }
         
-        /* Splash screen for iOS */
+        /* Splash Screen */
         .splash {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -64,16 +54,28 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
         
+        .sync-banner {
+            background: var(--primary);
+            color: white;
+            padding: 12px 16px;
+            margin: 16px;
+            border-radius: 12px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .sync-banner.show { display: flex; }
+        
         .vehicle-selector {
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: rgba(255,255,255,0.15);
             padding: 12px 16px;
-            border-radius: var(--radius-md);
+            border-radius: 16px;
             margin-top: 12px;
             cursor: pointer;
-            backdrop-filter: blur(10px);
         }
         
         .vehicle-plate {
@@ -83,13 +85,12 @@
             border-radius: 6px;
             font-weight: 700;
             font-size: 14px;
-            letter-spacing: 1px;
         }
         
         .vehicle-card {
-            background: var(--surface);
+            background: white;
             margin: 16px;
-            border-radius: var(--radius-lg);
+            border-radius: 24px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             overflow: hidden;
         }
@@ -101,7 +102,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 64px;
+            font-size: 80px;
             position: relative;
         }
         
@@ -128,13 +129,12 @@
             margin: 24px 16px 12px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
         }
         
         .document-list {
-            background: var(--surface);
+            background: white;
             margin: 0 16px;
-            border-radius: var(--radius-md);
+            border-radius: 16px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
         }
         
@@ -144,10 +144,9 @@
             padding: 16px;
             border-bottom: 1px solid #f0f0f0;
             cursor: pointer;
-            transition: background 0.2s;
         }
         
-        .document-item:active { background: #f5f5f5; }
+        .document-item:last-child { border-bottom: none; }
         
         .document-icon {
             width: 40px;
@@ -177,7 +176,6 @@
             border-radius: 12px;
             font-size: 11px;
             font-weight: 700;
-            text-transform: uppercase;
         }
         
         .status-badge.active { background: #e8f5e9; color: #2e7d32; }
@@ -210,16 +208,13 @@
         }
         
         .action-card {
-            background: var(--surface);
-            border-radius: var(--radius-md);
+            background: white;
+            border-radius: 16px;
             padding: 16px 8px;
             text-align: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
             cursor: pointer;
-            transition: transform 0.2s;
         }
-        
-        .action-card:active { transform: scale(0.95); }
         
         .action-icon {
             width: 48px;
@@ -238,32 +233,17 @@
         .action-icon.cyan { background: #e0f7fa; color: #00bcd4; }
         .action-icon.orange { background: #fff3e0; color: var(--warning); }
         .action-icon.red { background: #ffebee; color: var(--error); }
-        .action-icon.purple { background: #f3e5f5; color: #7b1fa2; }
-        
-        .install-banner {
-            background: var(--primary);
-            color: white;
-            padding: 12px 16px;
-            margin: 16px;
-            border-radius: 12px;
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        
-        .install-banner.show { display: flex; }
         
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: var(--surface);
+            background: white;
             box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
             display: flex;
             justify-content: space-around;
-            padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+            padding: 8px 0 16px;
             z-index: 100;
         }
         
@@ -302,20 +282,17 @@
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.6);
             z-index: 200;
-            opacity: 0;
-            transition: opacity 0.3s;
             overflow-y: auto;
         }
         
-        .modal-overlay.active { display: block; opacity: 1; }
+        .modal-overlay.active { display: block; }
         
         .modal-sheet {
-            background: var(--surface);
-            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            background: white;
+            border-radius: 24px 24px 0 0;
             padding: 24px;
             margin-top: 10vh;
             min-height: 90vh;
-            position: relative;
         }
         
         .modal-header {
@@ -326,13 +303,14 @@
         }
         
         .modal-title { font-size: 20px; font-weight: 700; }
+        
         .close-btn {
             width: 32px;
             height: 32px;
             border-radius: 50%;
             border: none;
             background: #f5f5f5;
-            color: var(--text-secondary);
+            color: #666;
             font-size: 18px;
             cursor: pointer;
         }
@@ -351,7 +329,7 @@
             width: 100%;
             padding: 14px 16px;
             border: 2px solid #e0e0e0;
-            border-radius: var(--radius-md);
+            border-radius: 16px;
             font-size: 16px;
         }
         
@@ -369,7 +347,7 @@
             background: var(--primary);
             color: white;
             border: none;
-            border-radius: var(--radius-md);
+            border-radius: 16px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -382,7 +360,7 @@
             background: transparent;
             color: var(--primary);
             border: 2px solid var(--primary);
-            border-radius: var(--radius-md);
+            border-radius: 16px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -394,7 +372,7 @@
             background: var(--error);
             color: white;
             border: none;
-            border-radius: var(--radius-md);
+            border-radius: 16px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -417,36 +395,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        #reader {
-            width: 100%;
-            min-height: 300px;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            width: 100%;
-        }
-        
-        .file-input-wrapper input[type=file] {
-            position: absolute;
-            left: -9999px;
-        }
-        
-        .file-input-label {
-            display: block;
-            padding: 16px;
-            background: #f5f5f5;
-            border: 2px dashed #ccc;
-            border-radius: var(--radius-md);
-            text-align: center;
-            cursor: pointer;
-            color: var(--text-secondary);
-        }
-        
         .hidden { display: none !important; }
         
         .notification {
@@ -462,7 +410,6 @@
             z-index: 1000;
             opacity: 0;
             transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         
         .notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
@@ -492,17 +439,6 @@
             color: var(--info);
             margin-top: 4px;
         }
-        
-        .km-badge {
-            display: inline-block;
-            background: #e3f2fd;
-            color: var(--primary);
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-left: 8px;
-        }
     </style>
 </head>
 <body>
@@ -515,12 +451,12 @@
 </div>
 
 <!-- Install Banner -->
-<div class="install-banner" id="install-banner">
+<div class="sync-banner" id="install-banner">
     <div style="display: flex; align-items: center; gap: 12px;">
         <span style="font-size: 24px;">🚗</span>
         <div>
             <div style="font-weight: 600;">Инсталирай приложението</div>
-            <div style="font-size: 12px; opacity: 0.9;">Работи по-бързо и офлайн</div>
+            <div style="font-size: 12px; opacity: 0.9;">Бърз достъп и офлайн работа</div>
         </div>
     </div>
     <button onclick="installApp()" style="background: white; color: var(--primary); border: none; padding: 8px 16px; border-radius: 20px; font-weight: 600; cursor: pointer;">
@@ -530,14 +466,6 @@
 
 <div class="app-bar">
     <div style="font-size: 20px; font-weight: 700;">🚗 AutoFleet</div>
-    <div style="display: flex; gap: 10px; margin-top: 8px;">
-        <button onclick="openSyncModal()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 12px; border-radius: 16px; font-size: 12px; cursor: pointer;">
-            ☁️ Синхр.
-        </button>
-        <button onclick="exportData()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 12px; border-radius: 16px; font-size: 12px; cursor: pointer;">
-            📤 Изнеси
-        </button>
-    </div>
     <div class="vehicle-selector" onclick="openVehicleList()">
         <div style="display: flex; align-items: center; gap: 12px;">
             <div class="vehicle-plate" id="current-plate">---</div>
@@ -565,7 +493,7 @@
     </div>
 
     <div class="section-title">
-        <span>Документи & Срокове</span>
+        <span>Документи & Сервиз</span>
         <span style="color: var(--error); font-size: 11px;" id="expired-count"></span>
     </div>
     
@@ -575,34 +503,34 @@
     <div class="quick-actions">
         <div class="action-card" onclick="openFuelModal()">
             <div class="action-icon cyan">⛽</div>
-            <div style="font-size: 12px; font-weight: 500;">Зареждане</div>
+            <div style="font-size: 12px; font-weight: 500;">Гориво</div>
         </div>
         <div class="action-card" onclick="openSyncModal()">
             <div class="action-icon blue">☁️</div>
             <div style="font-size: 12px; font-weight: 500;">Синхронизирай</div>
         </div>
-        <div class="action-card" onclick="openQRScanner()">
-            <div class="action-icon orange">📷</div>
-            <div style="font-size: 12px; font-weight: 500;">Сканирай</div>
-        </div>
         <div class="action-card" onclick="exportToFile()">
             <div class="action-icon red">📁</div>
             <div style="font-size: 12px; font-weight: 500;">Файл</div>
+        </div>
+        <div class="action-card" onclick="openAddVehicle()">
+            <div class="action-icon orange">🚗</div>
+            <div style="font-size: 12px; font-weight: 500;">Нова кола</div>
         </div>
     </div>
 </div>
 
 <div class="bottom-nav">
-    <button class="nav-item active" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+    <button class="nav-item active" onclick="window.scrollTo(0,0)">
         <div style="font-size: 20px;">🏠</div>
         <span>Начало</span>
     </button>
-    <button class="nav-item" onclick="showFuelHistory()">
+    <button class="nav-item" onclick="showNotification('История на горивото - отвори колата и добави зареждане')">
         <div style="font-size: 20px;">⛽</div>
         <span>Гориво</span>
     </button>
     <button class="fab" onclick="openAddVehicle()">+</button>
-    <button class="nav-item" onclick="exportData()">
+    <button class="nav-item" onclick="exportToFile()">
         <div style="font-size: 20px;">📤</div>
         <span>Изнеси</span>
     </button>
@@ -620,7 +548,7 @@
             <button class="close-btn" onclick="closeModal('vehicle-list-modal')">✕</button>
         </div>
         <div id="vehicle-list-container" style="margin-bottom: 20px;"></div>
-        <button class="btn-primary" onclick="openVehicleModal()">+ Добави нов автомобил</button>
+        <button class="btn-primary" onclick="openVehicleModal()">+ Добави автомобил</button>
     </div>
 </div>
 
@@ -677,30 +605,27 @@
         </div>
         
         <div class="form-group">
-            <label class="form-label">Дата на последна смяна</label>
+            <label class="form-label">Дата на смяна</label>
             <input type="date" class="form-input" id="oil-date">
-            <div class="hint">Кога е сменено маслото последно?</div>
         </div>
         
         <div class="form-group">
             <label class="form-label">Километраж при смяната</label>
             <input type="number" class="form-input" id="oil-km" placeholder="напр. 200000">
-            <div class="hint">Колко км беше автомобилът при смяната?</div>
         </div>
         
         <div class="form-row">
             <div class="form-group">
-                <label class="form-label">Интервал (км)</label>
+                <label class="form-label">След (км)</label>
                 <input type="number" class="form-input" id="oil-interval-km" value="10000" step="1000">
             </div>
             <div class="form-group">
-                <label class="form-label">Интервал (месеци)</label>
-                <input type="number" class="form-input" id="oil-interval-months" value="12" step="1">
+                <label class="form-label">След (мес.)</label>
+                <input type="number" class="form-input" id="oil-interval-months" value="12">
             </div>
         </div>
-        <div class="hint">Препоръчителен интервал за смяна</div>
         
-        <div class="form-group" style="margin-top: 20px;">
+        <div class="form-group">
             <label class="form-label">Тип масло</label>
             <input type="text" class="form-input" id="oil-type" placeholder="напр. Castrol 5W-40">
         </div>
@@ -711,8 +636,7 @@
         </div>
         
         <button class="btn-primary" onclick="saveOilChange()">Запази смяната</button>
-        <button class="btn-secondary hidden" id="btn-oil-history" onclick="showOilHistory()">История</button>
-        <button class="btn-danger hidden" id="btn-delete-oil" onclick="deleteOilChange()">Изтрий</button>
+        <button class="btn-danger hidden" id="btn-delete-oil" onclick="deleteOilChange()">Изтрий записа</button>
     </div>
 </div>
 
@@ -763,33 +687,16 @@
         </div>
         
         <div style="background: #e8f5e9; border: 2px dashed var(--success); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px;">
-            <h3 style="margin-bottom: 12px; color: var(--success);">📤 QR Код</h3>
-            <div class="qr-container" id="qrcode"></div>
-            <p style="font-size: 12px; color: var(--text-secondary); margin-top: 10px;">Сканирайте с друг телефон</p>
+            <h3 style="margin-bottom: 12px; color: var(--success);">📤 Копирай данните</h3>
+            <textarea class="form-input" id="export-text" readonly style="font-size: 11px; height: 100px; margin-bottom: 10px;"></textarea>
+            <button class="btn-secondary" onclick="copyExportText()">Копирай всички данни</button>
         </div>
 
-        <div class="form-group">
-            <label class="form-label">Текстов код</label>
-            <textarea class="form-input" id="export-text" readonly style="font-size: 11px; height: 80px;"></textarea>
-            <button class="btn-secondary" onclick="copyExportText()" style="margin-top: 8px;">Копирай</button>
+        <div style="background: #fff3e0; border: 2px dashed var(--warning); border-radius: 12px; padding: 20px;">
+            <h3 style="margin-bottom: 12px; color: var(--warning);">📥 Постави данни</h3>
+            <textarea class="form-input" id="import-text" placeholder="Поставете кода тук..." style="font-size: 11px; height: 100px; margin-bottom: 10px;"></textarea>
+            <button class="btn-primary" onclick="importFromText()">Зареди данните</button>
         </div>
-
-        <div class="form-group">
-            <label class="form-label">Въведи данни</label>
-            <textarea class="form-input" id="import-text" placeholder="Поставете кода тук..." style="font-size: 11px; height: 80px;"></textarea>
-            <button class="btn-primary" onclick="importFromText()" style="margin-top: 8px;">Зареди</button>
-        </div>
-    </div>
-</div>
-
-<!-- QR Scanner Modal -->
-<div class="modal-overlay" id="scanner-modal">
-    <div class="modal-sheet" style="margin-top: 10vh; min-height: 90vh;">
-        <div class="modal-header">
-            <div class="modal-title">📷 Сканирай QR код</div>
-            <button class="close-btn" onclick="closeScanner()">✕</button>
-        </div>
-        <div id="reader"></div>
     </div>
 </div>
 
@@ -797,47 +704,24 @@
 <div class="modal-overlay" id="file-modal">
     <div class="modal-sheet">
         <div class="modal-header">
-            <div class="modal-title">📁 Файл</div>
+            <div class="modal-title">📁 Файлова синхронизация</div>
             <button class="close-btn" onclick="closeModal('file-modal')">✕</button>
         </div>
-        <button class="btn-primary" onclick="downloadFile()">Изтегли JSON</button>
-        <div class="file-input-wrapper" style="margin-top: 20px;">
-            <input type="file" id="file-input" accept=".json" onchange="uploadFile(this)">
-            <label for="file-input" class="file-input-label">Качи файл</label>
+        <button class="btn-primary" onclick="downloadFile()">📥 Изтегли файл</button>
+        <div style="margin-top: 20px;">
+            <input type="file" id="file-input" accept=".json" onchange="uploadFile(this)" style="display: none;">
+            <button class="btn-secondary" onclick="document.getElementById('file-input').click()">📤 Качи файл</button>
         </div>
     </div>
 </div>
 
 <div class="notification" id="notification"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-
 <script>
-// Service Worker Registration for PWA
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
-        self.addEventListener('install', e => {
-            e.waitUntil(self.skipWaiting());
-        });
-        self.addEventListener('activate', e => {
-            e.waitUntil(self.clients.claim());
-        });
-        self.addEventListener('fetch', e => {
-            e.respondWith(fetch(e.request).catch(() => {
-                return new Response('Офлайн режим');
-            }));
-        });
-    `)).then(() => {
-        console.log('Service Worker registered');
-    }).catch(err => {
-        console.log('SW registration failed');
-    });
-}
-
-// Hide splash screen
-setTimeout(() => {
-    document.getElementById('splash').classList.add('hidden');
+// Hide splash after load
+setTimeout(function() {
+    const splash = document.getElementById('splash');
+    if (splash) splash.classList.add('hidden');
 }, 1500);
 
 // Install Prompt
@@ -853,29 +737,35 @@ function installApp() {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult) => {
             if (choiceResult.outcome === 'accepted') {
-                showNotification('Приложението се инсталира...');
+                showNotification('Инсталиране...');
             }
-            deferredPrompt = null;
             document.getElementById('install-banner').classList.remove('show');
         });
     } else {
-        showNotification('За iPhone: Натиснете "Сподели" и "Добави към началния екран"');
+        showNotification('За iPhone: Safari → Сподели → Добави към началния екран');
     }
 }
 
 // Data Management
 let appData = { vehicles: [], currentVehicleId: null };
-let html5QrCode = null;
 
 function loadData() {
-    const saved = localStorage.getItem('autoFleetData');
-    if (saved) appData = JSON.parse(saved);
+    try {
+        const saved = localStorage.getItem('autoFleetData');
+        if (saved) appData = JSON.parse(saved);
+    } catch(e) {
+        console.error('Error loading data');
+    }
     updateUI();
 }
 
 function saveData() {
-    localStorage.setItem('autoFleetData', JSON.stringify(appData));
-    updateUI();
+    try {
+        localStorage.setItem('autoFleetData', JSON.stringify(appData));
+        updateUI();
+    } catch(e) {
+        showNotification('Грешка при запазване');
+    }
 }
 
 function updateUI() {
@@ -883,7 +773,7 @@ function updateUI() {
     if (!v) {
         document.getElementById('current-plate').textContent = 'НЯМА';
         document.getElementById('current-name').textContent = 'Добави автомобил';
-        document.getElementById('documents-container').innerHTML = '<div style="padding: 40px; text-align: center; color: #999;">Няма автомобили</div>';
+        document.getElementById('documents-container').innerHTML = '<div style="padding: 40px; text-align: center; color: #999;">Няма добавени автомобили<br><br>Натиснете + долу</div>';
         return;
     }
     
@@ -922,11 +812,15 @@ function updateDocumentsList(v) {
             let extraInfo = '';
             
             if (oil && oil.date) {
-                const daysLeft = getDaysLeft(addMonths(oil.date, oil.intervalMonths || 12));
-                const kmLeft = (oil.km + (oil.intervalKm || 10000)) - v.km;
+                const nextDate = new Date(oil.date);
+                nextDate.setMonth(nextDate.getMonth() + (oil.intervalMonths || 12));
+                const daysLeft = Math.ceil((nextDate - new Date()) / (1000 * 60 * 60 * 24));
+                
+                const nextKm = (oil.km || 0) + (oil.intervalKm || 10000);
+                const kmLeft = nextKm - v.km;
                 
                 if (daysLeft < 0 || kmLeft < 0) {
-                    statusClass = 'expired';
+                    statusClass = 'danger';
                     statusText = 'СРОК';
                     expiredCount++;
                 } else if (daysLeft <= 30 || kmLeft <= 1000) {
@@ -937,7 +831,7 @@ function updateDocumentsList(v) {
                     statusText = 'OK';
                 }
                 
-                subtitle = `Последна: ${formatDate(oil.date)}`;
+                subtitle = `${oil.type || 'Масло'} | ${formatDate(oil.date)}`;
                 extraInfo = `<div class="service-history">Следваща: ${Math.max(0, kmLeft).toLocaleString()} км / ${Math.max(0, daysLeft)} дни</div>`;
             }
             
@@ -950,9 +844,8 @@ function updateDocumentsList(v) {
                         ${extraInfo}
                     </div>
                     <div style="text-align: right;">
-                        ${oil ? `<span class="status-badge ${statusClass}">${statusText}</span>` : '<span style="font-size: 12px; color: #999;">Няма</span>'}
+                        ${oil ? `<span class="status-badge ${statusClass === 'danger' ? 'expired' : (statusClass === 'warning' ? 'warning' : 'info')}">${statusText}</span>` : '<span style="font-size: 12px; color: #999;">+</span>'}
                     </div>
-                    <button class="add-btn" onclick="event.stopPropagation(); openOilModal()">+</button>
                 </div>
             `;
         } else {
@@ -963,7 +856,7 @@ function updateDocumentsList(v) {
             let subtitle = 'Няма записан документ';
             
             if (doc && doc.date) {
-                const dLeft = getDaysLeft(doc.date);
+                const dLeft = Math.ceil((new Date(doc.date) - new Date()) / (1000 * 60 * 60 * 24));
                 if (dLeft < 0) {
                     statusClass = 'expired';
                     statusText = 'ИЗТЕКЪЛ';
@@ -989,9 +882,8 @@ function updateDocumentsList(v) {
                         <div class="document-subtitle">${subtitle}</div>
                     </div>
                     <div style="text-align: right;">
-                        ${doc ? `<span class="status-badge ${statusClass}">${statusText}</span><div class="days-left">${daysLeft}</div>` : '<span style="font-size: 12px; color: #999;">Няма</span>'}
+                        ${doc ? `<span class="status-badge ${statusClass}">${statusText}</span><div class="days-left">${daysLeft}</div>` : '<span style="font-size: 12px; color: #999;">+</span>'}
                     </div>
-                    <button class="add-btn" onclick="event.stopPropagation(); openDocumentModal('${type.id}')">+</button>
                 </div>
             `;
         }
@@ -1001,28 +893,13 @@ function updateDocumentsList(v) {
     document.getElementById('expired-count').textContent = expiredCount > 0 ? `${expiredCount} изтекли` : '';
 }
 
-function addMonths(date, months) {
-    const d = new Date(date);
-    d.setMonth(d.getMonth() + months);
-    return d.toISOString().split('T')[0];
-}
-
-function getDaysLeft(dateStr) {
-    const end = new Date(dateStr);
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    return Math.ceil((end - today) / (1000 * 60 * 60 * 24));
-}
-
 function calculateConsumption(v) {
     if (!v.fuelHistory || v.fuelHistory.length < 2) return 0;
     let total = 0, count = 0;
     for (let i = 0; i < v.fuelHistory.length - 1; i++) {
-        const curr = v.fuelHistory[i];
-        const next = v.fuelHistory[i+1];
-        const km = curr.km - next.km;
-        if (km > 0 && next.liters > 0) {
-            total += (next.liters / km * 100);
+        const km = v.fuelHistory[i].km - v.fuelHistory[i+1].km;
+        if (km > 0) {
+            total += (v.fuelHistory[i+1].liters / km * 100);
             count++;
         }
     }
@@ -1033,11 +910,15 @@ function getCurrentVehicle() {
     return appData.vehicles.find(v => v.id === appData.currentVehicleId);
 }
 
+function formatDate(d) {
+    return new Date(d).toLocaleDateString('bg-BG');
+}
+
 // Vehicle Management
 function openVehicleList() {
     const container = document.getElementById('vehicle-list-container');
     if (appData.vehicles.length === 0) {
-        container.innerHTML = '<div style="text-align: center; color: #999;">Няма автомобили</div>';
+        container.innerHTML = '<div style="text-align: center; padding: 20px; color: #999;">Няма автомобили. Добавете първия!</div>';
     } else {
         container.innerHTML = appData.vehicles.map(v => `
             <div class="vehicle-list-item" onclick="selectVehicle(${v.id})">
@@ -1056,12 +937,15 @@ function selectVehicle(id) {
     appData.currentVehicleId = id;
     saveData();
     closeModal('vehicle-list-modal');
-    showNotification('Сменен автомобил');
+    showNotification('Автомобилът е сменен');
 }
 
 function openAddVehicle() {
-    if (appData.vehicles.length === 0) openVehicleModal();
-    else openVehicleList();
+    if (appData.vehicles.length === 0) {
+        openVehicleModal();
+    } else {
+        openVehicleList();
+    }
 }
 
 function openVehicleModal() {
@@ -1112,7 +996,6 @@ function openOilModal() {
     document.getElementById('oil-type').value = oil.type || '';
     document.getElementById('oil-price').value = oil.price || '';
     
-    document.getElementById('btn-oil-history').classList.toggle('hidden', !(v.oilHistory && v.oilHistory.length > 0));
     document.getElementById('btn-delete-oil').classList.toggle('hidden', !v.oilChange);
     
     document.getElementById('oil-modal').classList.add('active');
@@ -1120,7 +1003,7 @@ function openOilModal() {
 
 function saveOilChange() {
     const v = getCurrentVehicle();
-    const newOil = {
+    v.oilChange = {
         date: document.getElementById('oil-date').value,
         km: parseInt(document.getElementById('oil-km').value) || 0,
         intervalKm: parseInt(document.getElementById('oil-interval-km').value) || 10000,
@@ -1128,31 +1011,18 @@ function saveOilChange() {
         type: document.getElementById('oil-type').value,
         price: parseFloat(document.getElementById('oil-price').value) || 0
     };
-    
-    if (v.oilChange && v.oilChange.date) {
-        if (!v.oilHistory) v.oilHistory = [];
-        v.oilHistory.unshift({...v.oilChange});
-        v.oilHistory = v.oilHistory.slice(0, 10);
-    }
-    
-    v.oilChange = newOil;
     saveData();
     closeModal('oil-modal');
     showNotification('Смяната е записана! ✅');
 }
 
 function deleteOilChange() {
-    const v = getCurrentVehicle();
     if (confirm('Изтриване на записа?')) {
-        v.oilChange = null;
+        getCurrentVehicle().oilChange = null;
         saveData();
         closeModal('oil-modal');
-        showNotification('Записът е изтрит');
+        showNotification('Изтрито!');
     }
-}
-
-function showOilHistory() {
-    showNotification('История: ' + (getCurrentVehicle().oilHistory ? getCurrentVehicle().oilHistory.length + ' записа' : '0'));
 }
 
 // Documents
@@ -1185,8 +1055,7 @@ function saveDocument() {
 }
 
 function deleteDocument() {
-    const type = document.getElementById('doc-type').value;
-    getCurrentVehicle().documents[type] = null;
+    getCurrentVehicle().documents[document.getElementById('doc-type').value] = null;
     saveData();
     closeModal('document-modal');
     showNotification('Изтрито!');
@@ -1218,7 +1087,7 @@ function saveFuel() {
     v.fuelHistory.push(entry);
     saveData();
     closeModal('fuel-modal');
-    showNotification('Зареждането е записано! ⛽');
+    showNotification('Запазено! ⛽');
     
     document.getElementById('fuel-liters').value = '';
     document.getElementById('fuel-price').value = '';
@@ -1227,78 +1096,31 @@ function saveFuel() {
 
 // Sync
 function openSyncModal() {
-    generateQR();
     document.getElementById('export-text').value = btoa(unescape(encodeURIComponent(JSON.stringify(appData))));
     document.getElementById('sync-modal').classList.add('active');
 }
 
-function generateQR() {
-    const container = document.getElementById('qrcode');
-    container.innerHTML = '';
-    try {
-        new QRCode(container, {
-            text: btoa(unescape(encodeURIComponent(JSON.stringify({v: appData.vehicles})))),
-            width: 200,
-            height: 200,
-            correctLevel: QRCode.CorrectLevel.L
-        });
-    } catch(e) {
-        container.innerHTML = 'Твърде много данни';
-    }
-}
-
 function copyExportText() {
-    document.getElementById('export-text').select();
+    const el = document.getElementById('export-text');
+    el.select();
     document.execCommand('copy');
-    showNotification('Копирано! 📋');
+    showNotification('Копирано! Пратете го на другия телефон.');
 }
 
 function importFromText() {
     try {
         const text = document.getElementById('import-text').value.trim();
+        if (!text) return;
         const data = JSON.parse(decodeURIComponent(escape(atob(text))));
-        if (confirm('Това ще замени текущите данни. Продължи?')) {
+        if (confirm('Това ще замени всички текущи данни (' + appData.vehicles.length + ' коли). Продължи?')) {
             appData = data;
             saveData();
             closeModal('sync-modal');
-            showNotification('Данните са заредени! ✅');
+            showNotification('Успешно заредени ' + data.vehicles.length + ' коли! ✅');
         }
     } catch(e) {
         showNotification('Грешен код! ❌');
     }
-}
-
-function openQRScanner() {
-    document.getElementById('scanner-modal').classList.add('active');
-    html5QrCode = new Html5Qrcode("reader");
-    html5QrCode.start({facingMode: "environment"}, {fps: 10, qrbox: {width: 250, height: 250}},
-        (decodedText) => {
-            html5QrCode.stop().then(() => {
-                closeScanner();
-                try {
-                    const data = JSON.parse(decodeURIComponent(escape(atob(decodedText))));
-                    if (confirm(`Намерени ${data.v.length} автомобила. Зареди?`)) {
-                        appData.vehicles = data.v.map(v => ({
-                            id: Date.now() + Math.random(),
-                            plate: v.p, name: v.n, km: v.k,
-                            documents: v.d || {}, oilChange: v.o || null,
-                            oilHistory: v.oh || [], fuelHistory: v.f || []
-                        }));
-                        appData.currentVehicleId = appData.vehicles[0]?.id || null;
-                        saveData();
-                        showNotification('Синхронизирано! ✅');
-                    }
-                } catch(e) {
-                    showNotification('Грешен QR код');
-                }
-            });
-        }, () => {}
-    );
-}
-
-function closeScanner() {
-    document.getElementById('scanner-modal').classList.remove('active');
-    if (html5QrCode) html5QrCode.stop().catch(() => {});
 }
 
 function exportToFile() {
@@ -1310,7 +1132,7 @@ function downloadFile() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `autofleet-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `autofleet-backup-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
     showNotification('Файлът е изтеглен! 📥');
@@ -1323,7 +1145,7 @@ function uploadFile(input) {
     reader.onload = (e) => {
         try {
             const data = JSON.parse(e.target.result);
-            if (confirm('Замени текущите данни?')) {
+            if (confirm('Замени текущите данни с файла?')) {
                 appData = data;
                 saveData();
                 closeModal('file-modal');
@@ -1334,33 +1156,19 @@ function uploadFile(input) {
         }
     };
     reader.readAsText(file);
-    input.value = '';
 }
 
-// Utilities
+// Common
 function closeModal(id) {
     document.getElementById(id).classList.remove('active');
 }
 
 function showNotification(text) {
     const n = document.getElementById('notification');
+    if (!n) return;
     n.textContent = text;
     n.classList.add('show');
     setTimeout(() => n.classList.remove('show'), 3000);
-}
-
-function formatDate(d) {
-    return new Date(d).toLocaleDateString('bg-BG');
-}
-
-function showFuelHistory() {
-    const v = getCurrentVehicle();
-    if (!v || !v.fuelHistory) return showNotification('Няма история');
-    showNotification(`${v.fuelHistory.length} зареждания записани`);
-}
-
-function exportData() {
-    openSyncModal();
 }
 
 // Click outside to close
