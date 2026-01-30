@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1a237e">
     <title>AutoFleet Manager</title>
-    <!-- QR Code библиотека -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- QR Code скенер -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         :root {
@@ -18,6 +16,7 @@
             --error: #e53935;
             --warning: #ff9800;
             --success: #4caf50;
+            --info: #2196f3;
             --text-primary: #212121;
             --text-secondary: #757575;
             --radius-md: 16px;
@@ -34,19 +33,6 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-        
-        .sync-banner {
-            background: rgba(76, 175, 80, 0.2);
-            border: 1px solid var(--success);
-            color: white;
-            padding: 8px 16px;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 12px;
-            border-radius: 8px;
         }
         
         .vehicle-selector {
@@ -127,7 +113,10 @@
             align-items: center;
             padding: 16px;
             border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
         }
+        
+        .document-item:last-child { border-bottom: none; }
         
         .document-icon {
             width: 40px;
@@ -139,14 +128,17 @@
             align-items: center;
             justify-content: center;
             font-size: 20px;
-            margin-right: 16px;
+            margin-right: 12px;
+            flex-shrink: 0;
         }
         
         .document-icon.warning { background: #fff3e0; color: var(--warning); }
         .document-icon.danger { background: #ffebee; color: var(--error); }
-        .document-info { flex: 1; }
+        .document-icon.info { background: #e3f2fd; color: var(--info); }
+        
+        .document-info { flex: 1; min-width: 0; }
         .document-title { font-weight: 600; font-size: 15px; }
-        .document-subtitle { font-size: 13px; color: var(--text-secondary); }
+        .document-subtitle { font-size: 13px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         .status-badge {
             display: inline-block;
@@ -154,12 +146,15 @@
             border-radius: 12px;
             font-size: 11px;
             font-weight: 700;
+            text-transform: uppercase;
         }
         
         .status-badge.active { background: #e8f5e9; color: #2e7d32; }
         .status-badge.warning { background: #fff3e0; color: #ef6c00; }
         .status-badge.expired { background: #ffebee; color: #c62828; }
-        .days-left { font-size: 12px; color: var(--text-secondary); text-align: right; }
+        .status-badge.info { background: #e3f2fd; color: #1976d2; }
+        
+        .days-left { font-size: 12px; color: var(--text-secondary); text-align: right; margin-top: 4px; }
         
         .add-btn {
             width: 32px;
@@ -173,6 +168,7 @@
             justify-content: center;
             cursor: pointer;
             margin-left: 8px;
+            flex-shrink: 0;
         }
         
         .quick-actions {
@@ -208,6 +204,7 @@
         .action-icon.cyan { background: #e0f7fa; color: #00bcd4; }
         .action-icon.orange { background: #fff3e0; color: var(--warning); }
         .action-icon.red { background: #ffebee; color: var(--error); }
+        .action-icon.purple { background: #f3e5f5; color: #7b1fa2; }
         
         .bottom-nav {
             position: fixed;
@@ -268,8 +265,8 @@
             background: var(--surface);
             border-radius: var(--radius-lg) var(--radius-lg) 0 0;
             padding: 24px;
-            margin-top: 20vh;
-            min-height: 80vh;
+            margin-top: 10vh;
+            min-height: 90vh;
             position: relative;
         }
         
@@ -312,6 +309,12 @@
         
         .form-input:focus { outline: none; border-color: var(--primary); }
         
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
         .btn-primary {
             width: 100%;
             padding: 16px;
@@ -337,6 +340,26 @@
             cursor: pointer;
         }
         
+        .btn-danger {
+            width: 100%;
+            padding: 16px;
+            background: var(--error);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+        
+        .hint {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            font-style: italic;
+        }
+        
         .sync-section {
             background: #e8f5e9;
             border: 2px dashed var(--success);
@@ -353,17 +376,6 @@
             border-radius: 12px;
             margin: 10px 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .sync-code {
-            font-family: monospace;
-            font-size: 18px;
-            background: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 10px 0;
-            word-break: break-all;
-            border: 1px solid #ddd;
         }
         
         #reader {
@@ -427,8 +439,6 @@
             cursor: pointer;
         }
         
-        .vehicle-list-item:hover { background: #f5f5f5; }
-        
         .plate-small {
             background: var(--primary);
             color: white;
@@ -438,12 +448,21 @@
             margin-right: 12px;
         }
         
-        .swipe-hint {
-            text-align: center;
-            font-size: 12px;
-            color: #999;
-            margin-top: 8px;
-            font-style: italic;
+        .service-history {
+            font-size: 11px;
+            color: var(--info);
+            margin-top: 4px;
+        }
+        
+        .km-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
         }
     </style>
 </head>
@@ -468,7 +487,6 @@
     </div>
 </div>
 
-<!-- Main Content -->
 <div id="main-content">
     <div class="vehicle-card">
         <div class="vehicle-image">
@@ -516,7 +534,6 @@
     </div>
 </div>
 
-<!-- Bottom Nav -->
 <div class="bottom-nav">
     <button class="nav-item active" onclick="showMain()">
         <div style="font-size: 20px;">🏠</div>
@@ -544,9 +561,7 @@
             <div class="modal-title">Моите автомобили</div>
             <button class="close-btn" onclick="closeModal('vehicle-list-modal')">✕</button>
         </div>
-        <div id="vehicle-list-container" style="margin-bottom: 20px;">
-            <!-- Generated by JS -->
-        </div>
+        <div id="vehicle-list-container" style="margin-bottom: 20px;"></div>
         <button class="btn-primary" onclick="openVehicleModal()">+ Добави нов автомобил</button>
     </div>
 </div>
@@ -595,6 +610,59 @@
     </div>
 </div>
 
+<!-- Oil Change Modal -->
+<div class="modal-overlay" id="oil-modal">
+    <div class="modal-sheet">
+        <div class="modal-header">
+            <div class="modal-title">🛢️ Смяна на масло</div>
+            <button class="close-btn" onclick="closeModal('oil-modal')">✕</button>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Дата на последна смяна</label>
+            <input type="date" class="form-input" id="oil-date">
+            <div class="hint">Кога е сменено маслото последно?</div>
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Километраж при смяната</label>
+            <input type="number" class="form-input" id="oil-km" placeholder="напр. 200000">
+            <div class="hint">Колко км беше автомобилът при смяната?</div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Интервал (км)</label>
+                <input type="number" class="form-input" id="oil-interval-km" value="10000" step="1000">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Интервал (месеци)</label>
+                <input type="number" class="form-input" id="oil-interval-months" value="12" step="1">
+            </div>
+        </div>
+        <div class="hint">Препоръчителен интервал за смяна</div>
+        
+        <div class="form-group" style="margin-top: 20px;">
+            <label class="form-label">Тип масло</label>
+            <input type="text" class="form-input" id="oil-type" placeholder="напр. Castrol 5W-40">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Цена (лв.)</label>
+            <input type="number" class="form-input" id="oil-price" placeholder="0.00" step="0.01">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Сервиз/Място (незадължително)</label>
+            <input type="text" class="form-input" id="oil-place" placeholder="напр. Автосервиз Иванов">
+        </div>
+        
+        <button class="btn-primary" onclick="saveOilChange()">Запази смяната</button>
+        <button class="btn-secondary hidden" id="btn-oil-history" onclick="showOilHistory()">История на смяните</button>
+        <button class="btn-danger hidden" id="btn-delete-oil" onclick="deleteOilChange()">Изтрий записа</button>
+    </div>
+</div>
+
 <!-- Fuel Modal -->
 <div class="modal-overlay" id="fuel-modal">
     <div class="modal-sheet">
@@ -615,7 +683,7 @@
                 <option value="Електричество">Електричество</option>
             </select>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="form-row">
             <div class="form-group">
                 <label class="form-label">Литри</label>
                 <input type="number" class="form-input" id="fuel-liters" step="0.01">
@@ -633,7 +701,7 @@
     </div>
 </div>
 
-<!-- Sync/Export Modal -->
+<!-- Sync Modal -->
 <div class="modal-overlay" id="sync-modal">
     <div class="modal-sheet">
         <div class="modal-header">
@@ -644,24 +712,20 @@
         <div class="sync-section">
             <h3 style="margin-bottom: 12px; color: var(--success);">📤 Сподели данни (QR код)</h3>
             <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
-                Покажи този QR код на другия телефон и го сканирай с бутона "Сканирай"
+                Покажи този QR код на другия телефон и го сканирай
             </p>
             <div class="qr-container" id="qrcode"></div>
-            <div class="swipe-hint">Сканирайте с друг телефон →</div>
         </div>
 
         <div style="background: #e3f2fd; border: 2px dashed var(--primary); border-radius: 12px; padding: 20px; margin: 20px 0;">
             <h3 style="margin-bottom: 12px; color: var(--primary);">📥 Въведи данни ръчно</h3>
-            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
-                Ако QR кодът не работи, копирайте този текст на другия телефон и го поставете в полето "Въведи данни"
-            </p>
             <textarea class="form-input" id="export-text" readonly style="font-family: monospace; font-size: 11px; height: 80px; margin-bottom: 10px;"></textarea>
             <button class="btn-secondary" onclick="copyExportText()">Копирай текста</button>
         </div>
 
         <div style="background: #fff3e0; border: 2px dashed var(--warning); border-radius: 12px; padding: 20px; margin: 20px 0;">
-            <h3 style="margin-bottom: 12px; color: var(--warning);">📥 Въведи данни</h3>
-            <textarea class="form-input" id="import-text" placeholder="Поставете тук кода от другия телефон..." style="font-family: monospace; font-size: 11px; height: 80px; margin-bottom: 10px;"></textarea>
+            <h3 style="margin-bottom: 12px; color: var(--warning);">📥 Получи данни</h3>
+            <textarea class="form-input" id="import-text" placeholder="Поставете кода тук..." style="font-family: monospace; font-size: 11px; height: 80px; margin-bottom: 10px;"></textarea>
             <button class="btn-primary" onclick="importFromText()">Зареди данните</button>
         </div>
     </div>
@@ -675,41 +739,20 @@
             <button class="close-btn" onclick="closeScanner()">✕</button>
         </div>
         <div id="reader"></div>
-        <p style="text-align: center; margin-top: 20px; color: var(--text-secondary);">
-            Насочете камерата към QR кода от другия телефон
-        </p>
     </div>
 </div>
 
-<!-- File Export/Import Modal -->
+<!-- File Modal -->
 <div class="modal-overlay" id="file-modal">
     <div class="modal-sheet">
         <div class="modal-header">
             <div class="modal-title">📁 Файлова синхронизация</div>
             <button class="close-btn" onclick="closeModal('file-modal')">✕</button>
         </div>
-        
-        <div style="margin-bottom: 20px;">
-            <h3 style="margin-bottom: 12px;">📤 Запази като файл</h3>
-            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
-                Запазете данните като файл, който можете да прехвърлите по имейл, Viber или Bluetooth
-            </p>
-            <button class="btn-primary" onclick="downloadFile()">📥 Изтегли файл (JSON)</button>
-        </div>
-
-        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-
-        <div>
-            <h3 style="margin-bottom: 12px;">📥 Зареди от файл</h3>
-            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
-                Изберете предварително запазен файл с данни
-            </p>
-            <div class="file-input-wrapper">
-                <input type="file" id="file-input" accept=".json" onchange="uploadFile(this)">
-                <label for="file-input" class="file-input-label">
-                    📁 Избери файл от телефона
-                </label>
-            </div>
+        <button class="btn-primary" onclick="downloadFile()">📥 Изтегли файл</button>
+        <div class="file-input-wrapper" style="margin-top: 20px;">
+            <input type="file" id="file-input" accept=".json" onchange="uploadFile(this)">
+            <label for="file-input" class="file-input-label">📁 Избери файл</label>
         </div>
     </div>
 </div>
@@ -717,22 +760,13 @@
 <div class="notification" id="notification"></div>
 
 <script>
-// Data Management
-let appData = {
-    vehicles: [],
-    currentVehicleId: null,
-    lastSync: null
-};
-
+let appData = { vehicles: [], currentVehicleId: null };
 let html5QrCode = null;
 
-// Load data on start
 function loadData() {
     const saved = localStorage.getItem('autoFleetData');
-    if (saved) {
-        appData = JSON.parse(saved);
-        updateUI();
-    }
+    if (saved) appData = JSON.parse(saved);
+    updateUI();
 }
 
 function saveData() {
@@ -740,10 +774,8 @@ function saveData() {
     updateUI();
 }
 
-// UI Functions
 function updateUI() {
     const v = getCurrentVehicle();
-    
     if (!v) {
         document.getElementById('current-plate').textContent = 'НЯМА';
         document.getElementById('current-name').textContent = 'Добави автомобил';
@@ -762,62 +794,117 @@ function updateUI() {
 }
 
 function updateDocumentsList(v) {
+    // Ensure oilChange exists in old data
+    if (!v.oilChange) v.oilChange = null;
+    
     const types = [
         {id: 'tax', icon: '💰', title: 'Данък МПС'},
         {id: 'insurance', icon: '🛡️', title: 'Гражданска отговорност'},
         {id: 'inspection', icon: '🔍', title: 'Технически преглед'},
         {id: 'casco', icon: '🛡️', title: 'Каско'},
         {id: 'vignette', icon: '🎫', title: 'Винетка'},
-        {id: 'fire', icon: '🧯', title: 'Пожарогасител'}
+        {id: 'fire', icon: '🧯', title: 'Пожарогасител'},
+        {id: 'oil', icon: '🛢️', title: 'Смяна на масло', isOil: true}
     ];
     
     let expiredCount = 0;
     let html = '';
     
     types.forEach(type => {
-        const doc = v.documents[type.id];
-        let statusClass = '';
-        let statusText = '';
-        let daysLeft = '';
-        let subtitle = 'Няма записан документ';
-        
-        if (doc && doc.date) {
-            const days = getDaysLeft(doc.date);
-            if (days < 0) {
-                statusClass = 'expired';
-                statusText = 'ИЗТЕКЪЛ';
-                daysLeft = `Преди ${Math.abs(days)} дни`;
-                expiredCount++;
-            } else if (days <= 7) {
-                statusClass = 'warning';
-                statusText = 'ИЗТИЧА';
-                daysLeft = `${days} дни`;
-            } else {
-                statusClass = 'active';
-                statusText = 'АКТИВЕН';
-                daysLeft = `${days} дни`;
+        if (type.isOil) {
+            // Oil change special handling
+            const oil = v.oilChange;
+            let statusClass = '';
+            let statusText = '';
+            let subtitle = 'Няма записана смяна';
+            let extraInfo = '';
+            
+            if (oil && oil.date) {
+                const daysLeft = getDaysLeft(addMonths(oil.date, oil.intervalMonths || 12));
+                const kmLeft = (oil.km + (oil.intervalKm || 10000)) - v.km;
+                const nextKm = oil.km + (oil.intervalKm || 10000);
+                
+                if (daysLeft < 0 || kmLeft < 0) {
+                    statusClass = 'expired';
+                    statusText = 'СРОК';
+                    expiredCount++;
+                } else if (daysLeft <= 30 || kmLeft <= 1000) {
+                    statusClass = 'warning';
+                    statusText = 'СКОРО';
+                } else {
+                    statusClass = 'info';
+                    statusText = 'OK';
+                }
+                
+                subtitle = `Последна: ${formatDate(oil.date)}`;
+                extraInfo = `<div class="service-history">Следваща: ${Math.max(0, kmLeft).toLocaleString()} км или ${Math.max(0, daysLeft)} дни</div>`;
             }
-            subtitle = `До: ${formatDate(doc.date)}${doc.price ? ' - ' + doc.price + 'лв' : ''}`;
+            
+            html += `
+                <div class="document-item" onclick="openOilModal()">
+                    <div class="document-icon ${statusClass}">${type.icon}</div>
+                    <div class="document-info">
+                        <div class="document-title">${type.title} <span class="km-badge" id="oil-next-km"></span></div>
+                        <div class="document-subtitle">${subtitle}</div>
+                        ${extraInfo}
+                    </div>
+                    <div style="text-align: right;">
+                        ${oil ? `<span class="status-badge ${statusClass}">${statusText}</span>` : '<span style="font-size: 12px; color: #999;">Няма</span>'}
+                    </div>
+                    <button class="add-btn" onclick="event.stopPropagation(); openOilModal()">+</button>
+                </div>
+            `;
+        } else {
+            // Regular documents
+            const doc = v.documents[type.id];
+            let statusClass = '';
+            let statusText = '';
+            let daysLeft = '';
+            let subtitle = 'Няма записан документ';
+            
+            if (doc && doc.date) {
+                const dLeft = getDaysLeft(doc.date);
+                if (dLeft < 0) {
+                    statusClass = 'expired';
+                    statusText = 'ИЗТЕКЪЛ';
+                    daysLeft = `Преди ${Math.abs(dLeft)} дни`;
+                    expiredCount++;
+                } else if (dLeft <= 7) {
+                    statusClass = 'warning';
+                    statusText = 'ИЗТИЧА';
+                    daysLeft = `${dLeft} дни`;
+                } else {
+                    statusClass = 'active';
+                    statusText = 'АКТИВЕН';
+                    daysLeft = `${dLeft} дни`;
+                }
+                subtitle = `До: ${formatDate(doc.date)}${doc.price ? ' - ' + doc.price + 'лв' : ''}`;
+            }
+            
+            html += `
+                <div class="document-item" onclick="openDocumentModal('${type.id}')">
+                    <div class="document-icon ${statusClass}">${type.icon}</div>
+                    <div class="document-info">
+                        <div class="document-title">${type.title}</div>
+                        <div class="document-subtitle">${subtitle}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        ${doc ? `<span class="status-badge ${statusClass}">${statusText}</span><div class="days-left">${daysLeft}</div>` : '<span style="font-size: 12px; color: #999;">Няма</span>'}
+                    </div>
+                    <button class="add-btn" onclick="event.stopPropagation(); openDocumentModal('${type.id}')">+</button>
+                </div>
+            `;
         }
-        
-        html += `
-            <div class="document-item" onclick="openDocumentModal('${type.id}')">
-                <div class="document-icon ${statusClass}">${type.icon}</div>
-                <div class="document-info">
-                    <div class="document-title">${type.title}</div>
-                    <div class="document-subtitle">${subtitle}</div>
-                </div>
-                <div style="text-align: right;">
-                    ${doc ? `<span class="status-badge ${statusClass}">${statusText}</span>` : '<span style="font-size: 12px; color: #999;">Няма</span>'}
-                    <div class="days-left">${daysLeft}</div>
-                </div>
-                <button class="add-btn" onclick="event.stopPropagation(); openDocumentModal('${type.id}')">+</button>
-            </div>
-        `;
     });
     
     document.getElementById('documents-container').innerHTML = html;
     document.getElementById('expired-count').textContent = expiredCount > 0 ? `${expiredCount} изтекли` : '';
+}
+
+function addMonths(date, months) {
+    const d = new Date(date);
+    d.setMonth(d.getMonth() + months);
+    return d.toISOString().split('T')[0];
 }
 
 function getDaysLeft(dateStr) {
@@ -901,6 +988,8 @@ function saveVehicle() {
         name,
         km,
         documents: { tax: null, insurance: null, inspection: null, casco: null, vignette: null, fire: null },
+        oilChange: null,
+        oilHistory: [],
         fuelHistory: []
     };
     
@@ -910,10 +999,104 @@ function saveVehicle() {
     closeModal('vehicle-modal');
     showNotification('Автомобилът е добавен!');
     
-    // Clear inputs
     document.getElementById('veh-plate').value = '';
     document.getElementById('veh-name').value = '';
     document.getElementById('veh-km').value = '';
+}
+
+// Oil Change Management
+function openOilModal() {
+    const v = getCurrentVehicle();
+    if (!v) {
+        showNotification('Първо добавете автомобил!');
+        return;
+    }
+    
+    const oil = v.oilChange || {};
+    document.getElementById('oil-date').value = oil.date || new Date().toISOString().split('T')[0];
+    document.getElementById('oil-km').value = oil.km || v.km;
+    document.getElementById('oil-interval-km').value = oil.intervalKm || 10000;
+    document.getElementById('oil-interval-months').value = oil.intervalMonths || 12;
+    document.getElementById('oil-type').value = oil.type || '';
+    document.getElementById('oil-price').value = oil.price || '';
+    document.getElementById('oil-place').value = oil.place || '';
+    
+    // Show history button if we have history
+    const hasHistory = v.oilHistory && v.oilHistory.length > 0;
+    document.getElementById('btn-oil-history').classList.toggle('hidden', !hasHistory);
+    document.getElementById('btn-delete-oil').classList.toggle('hidden', !v.oilChange);
+    
+    document.getElementById('oil-modal').classList.add('active');
+}
+
+function saveOilChange() {
+    const v = getCurrentVehicle();
+    
+    const newOil = {
+        date: document.getElementById('oil-date').value,
+        km: parseInt(document.getElementById('oil-km').value) || 0,
+        intervalKm: parseInt(document.getElementById('oil-interval-km').value) || 10000,
+        intervalMonths: parseInt(document.getElementById('oil-interval-months').value) || 12,
+        type: document.getElementById('oil-type').value,
+        price: parseFloat(document.getElementById('oil-price').value) || 0,
+        place: document.getElementById('oil-place').value
+    };
+    
+    // Save to history if we're updating existing
+    if (v.oilChange && v.oilChange.date) {
+        if (!v.oilHistory) v.oilHistory = [];
+        v.oilHistory.unshift({...v.oilChange, changedAt: new Date().toISOString()});
+        // Keep only last 10 records
+        v.oilHistory = v.oilHistory.slice(0, 10);
+    }
+    
+    v.oilChange = newOil;
+    saveData();
+    closeModal('oil-modal');
+    showNotification('Смяната на масло е записана! ✅');
+}
+
+function deleteOilChange() {
+    const v = getCurrentVehicle();
+    if (confirm('Сигурни ли сте, че искате да изтриете записа за смяна на масло?')) {
+        v.oilChange = null;
+        saveData();
+        closeModal('oil-modal');
+        showNotification('Записът е изтрит');
+    }
+}
+
+function showOilHistory() {
+    const v = getCurrentVehicle();
+    if (!v.oilHistory || v.oilHistory.length === 0) return;
+    
+    let html = '<div style="max-height: 300px; overflow-y: auto;">';
+    v.oilHistory.forEach((oil, idx) => {
+        html += `
+            <div style="padding: 12px; border-bottom: 1px solid #eee; ${idx === 0 ? 'background: #f5f5f5;' : ''}">
+                <div style="font-weight: 600;">${formatDate(oil.date)} - ${oil.km.toLocaleString()} км</div>
+                <div style="font-size: 13px; color: #666;">${oil.type || 'Няма тип'} ${oil.price ? '- ' + oil.price + 'лв' : ''}</div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    // Replace modal content temporarily
+    const originalContent = document.querySelector('#oil-modal .modal-sheet').innerHTML;
+    document.querySelector('#oil-modal .modal-sheet').innerHTML = `
+        <div class="modal-header">
+            <div class="modal-title">🛢️ История на смяните</div>
+            <button class="close-btn" onclick="restoreOilModal('${btoa(encodeURIComponent(originalContent))}')">✕</button>
+        </div>
+        ${html}
+        <button class="btn-secondary" style="margin-top: 20px;" onclick="restoreOilModal('${btoa(encodeURIComponent(originalContent))}')">← Назад</button>
+    `;
+}
+
+function restoreOilModal(encodedContent) {
+    document.querySelector('#oil-modal .modal-sheet').innerHTML = decodeURIComponent(atob(encodedContent));
+    // Re-attach event listeners by reopening
+    openOilModal();
 }
 
 // Document Management
@@ -993,7 +1176,7 @@ function saveFuel() {
     document.getElementById('fuel-km').value = '';
 }
 
-// SYNC & EXPORT FUNCTIONS
+// Sync Functions
 function openSyncModal() {
     generateQR();
     generateExportText();
@@ -1004,138 +1187,108 @@ function generateQR() {
     const qrContainer = document.getElementById('qrcode');
     qrContainer.innerHTML = '';
     
-    // Създаваме компактен JSON за QR кода (само основни данни заради ограничение на размера)
     const compactData = {
         v: appData.vehicles.map(v => ({
             p: v.plate,
             n: v.name,
             k: v.km,
             d: v.documents,
-            f: v.fuelHistory.slice(0, 5) // Само последните 5 зареждания заради размера на QR
+            o: v.oilChange,
+            oh: v.oilHistory,
+            f: v.fuelHistory.slice(0, 5)
         }))
     };
     
-    const jsonStr = JSON.stringify(compactData);
-    // Компресираме още повече чрез base64
-    const compressed = btoa(unescape(encodeURIComponent(jsonStr)));
-    
     try {
         new QRCode(qrContainer, {
-            text: compressed,
+            text: btoa(unescape(encodeURIComponent(JSON.stringify(compactData)))),
             width: 200,
             height: 200,
-            colorDark : "#000000",
-            colorLight : "#ffffff",
-            correctLevel : QRCode.CorrectLevel.L // Ниска корекция за повече данни
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.L
         });
     } catch(e) {
-        qrContainer.innerHTML = '<div style="color: red;">Твърде много данни за QR код</div>';
+        qrContainer.innerHTML = '<div style="color: red;">Много данни за QR</div>';
     }
 }
 
 function generateExportText() {
-    const dataStr = JSON.stringify(appData);
-    const compressed = btoa(unescape(encodeURIComponent(dataStr)));
-    document.getElementById('export-text').value = compressed;
+    document.getElementById('export-text').value = btoa(unescape(encodeURIComponent(JSON.stringify(appData))));
 }
 
 function copyExportText() {
-    const el = document.getElementById('export-text');
-    el.select();
+    document.getElementById('export-text').select();
     document.execCommand('copy');
-    showNotification('Копирано! Поставете го на другия телефон.');
+    showNotification('Копирано! 📋');
 }
 
 function importFromText() {
     const text = document.getElementById('import-text').value.trim();
-    if (!text) {
-        showNotification('Моля, поставете кода!');
-        return;
-    }
+    if (!text) return showNotification('Моля, поставете кода!');
     
     try {
-        const jsonStr = decodeURIComponent(escape(atob(text)));
-        const imported = JSON.parse(jsonStr);
-        
-        if (confirm('Това ще замени всички текущи данни. Сигурни ли сте?')) {
+        const imported = JSON.parse(decodeURIComponent(escape(atob(text))));
+        if (confirm('Това ще замени текущите данни. Сигурни ли сте?')) {
             appData = imported;
             saveData();
             closeModal('sync-modal');
-            showNotification('Данните са заредени успешно! ✅');
+            showNotification('Данните са заредени! ✅');
         }
     } catch(e) {
-        showNotification('Грешен код! Опитайте отново.');
+        showNotification('Грешен код! ❌');
     }
 }
 
-// QR Scanner
 function openQRScanner() {
     document.getElementById('scanner-modal').classList.add('active');
-    
     html5QrCode = new Html5Qrcode("reader");
-    html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        onScanSuccess,
-        onScanFailure
+    html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } },
+        (decodedText) => {
+            html5QrCode.stop().then(() => {
+                closeScanner();
+                try {
+                    const imported = JSON.parse(decodeURIComponent(escape(atob(decodedText))));
+                    if (confirm(`Намерени ${imported.v.length} автомобила. Зареди?`)) {
+                        appData.vehicles = imported.v.map(v => ({
+                            id: Date.now() + Math.random(),
+                            plate: v.p,
+                            name: v.n,
+                            km: v.k,
+                            documents: v.d || {},
+                            oilChange: v.o || null,
+                            oilHistory: v.oh || [],
+                            fuelHistory: v.f || []
+                        }));
+                        appData.currentVehicleId = appData.vehicles[0]?.id || null;
+                        saveData();
+                        showNotification('Синхронизирано! ✅');
+                    }
+                } catch(e) {
+                    showNotification('Грешен QR код');
+                }
+            });
+        },
+        () => {}
     );
-}
-
-function onScanSuccess(decodedText) {
-    // Спираме сканирането
-    html5QrCode.stop().then(() => {
-        closeScanner();
-        
-        try {
-            const jsonStr = decodeURIComponent(escape(atob(decodedText)));
-            const imported = JSON.parse(jsonStr);
-            
-            if (confirm(`Намерени ${imported.v.length} автомобила. Зареди ли данните?`)) {
-                // Разширяваме съкратените ключове обратно
-                appData.vehicles = imported.v.map(v => ({
-                    id: Date.now() + Math.random(),
-                    plate: v.p,
-                    name: v.n,
-                    km: v.k,
-                    documents: v.d || {},
-                    fuelHistory: v.f || []
-                }));
-                appData.currentVehicleId = appData.vehicles[0]?.id || null;
-                saveData();
-                showNotification('Данните са синхронизирани! ✅');
-            }
-        } catch(e) {
-            showNotification('Грешка при четене на QR кода');
-        }
-    });
-}
-
-function onScanFailure(error) {
-    // console.warn(`QR error = ${error}`);
 }
 
 function closeScanner() {
     document.getElementById('scanner-modal').classList.remove('active');
-    if (html5QrCode) {
-        html5QrCode.stop().catch(() => {});
-    }
+    if (html5QrCode) html5QrCode.stop().catch(() => {});
 }
 
-// File Export/Import
 function exportToFile() {
     document.getElementById('file-modal').classList.add('active');
 }
 
 function downloadFile() {
-    const dataStr = JSON.stringify(appData, null, 2);
-    const blob = new Blob([dataStr], {type: 'application/json'});
+    const blob = new Blob([JSON.stringify(appData, null, 2)], {type: 'application/json'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `autofleet-backup-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
+    a.download = `autofleet-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
-    document.body.removeChild(a);
     URL.revokeObjectURL(url);
     showNotification('Файлът е изтеглен! 📥');
 }
@@ -1145,17 +1298,17 @@ function uploadFile(input) {
     if (!file) return;
     
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = (e) => {
         try {
             const imported = JSON.parse(e.target.result);
-            if (confirm('Това ще замени текущите данни. Продължи?')) {
+            if (confirm('Замени текущите данни?')) {
                 appData = imported;
                 saveData();
                 closeModal('file-modal');
                 showNotification('Файлът е зареден! ✅');
             }
         } catch(e) {
-            showNotification('Грешен формат на файла!');
+            showNotification('Грешен файл! ❌');
         }
     };
     reader.readAsText(file);
@@ -1178,24 +1331,14 @@ function formatDate(d) {
     return new Date(d).toLocaleDateString('bg-BG');
 }
 
-function showMain() {
-    // Already on main
-}
+function showMain() {}
+function showFuelHistory() { showNotification('История: Изберете автомобил → Зареждане'); }
+function exportData() { openSyncModal(); }
 
-function showFuelHistory() {
-    showNotification('История на горивото - изберете автомобил и вижте раздела "Зареждане"');
-}
-
-function openAddMenu() {
-    openVehicleModal();
-}
-
-// Event listeners
 document.querySelectorAll('.modal-overlay').forEach(m => {
     m.addEventListener('click', e => { if(e.target === m) closeModal(m.id); });
 });
 
-// Load on start
 loadData();
 </script>
 
